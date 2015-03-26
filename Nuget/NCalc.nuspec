@@ -12,5 +12,6 @@
   </metadata>
   <files>
     <file src="..\Evaluant.Calculator\bin\Release\NCalc.dll" target="lib\net35\" />
+    <file src="..\Binaries\Antlr3.Runtime.dll" target="lib\net35\" />
   </files>
 </package>
