@@ -1,6 +1,6 @@
 $root = (split-path -parent $MyInvocation.MyCommand.Definition) + '\..'
 $version = [System.Reflection.Assembly]::LoadFile("$root\Evaluant.Calculator\bin\Release\NCalc.dll").GetName().Version
-$versionStr = "{0}.{1}.{2}" -f ($version.Major, $version.Minor, $version.Build)
+$versionStr = "{0}.{1}.{2}.{3}" -f ($version.Major, $version.Minor, $version.Build, $version.Revision)
 
 Write-Host "Setting .nuspec version tag to $versionStr"
 

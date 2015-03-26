@@ -24,5 +24,5 @@ after_test:
 
 artifacts:
   - path: Evaluant.Calculator\bin\Release\NCalc.dll
-    name: NCalc2.dll
+    name: NCalc.dll
   - path: '**\NCalc*.nupkg'
