@@ -12,7 +12,6 @@ using Stack = System.Collections.Generic.Stack<object>;
 using List = System.Collections.IList;
 using ArrayList = System.Collections.Generic.List<object>;
 
-[System.CodeDom.Compiler.GeneratedCode("ANTLR", "3.3.0.7239")]
 [System.CLSCompliant(false)]
 public partial class NCalcLexer : Antlr.Runtime.Lexer
 {
