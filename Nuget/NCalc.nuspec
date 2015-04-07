@@ -14,6 +14,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\Evaluant.Calculator\bin\Release\NCalc.dll" target="lib\net35\" />
+    <file src="..\Evaluant.Calculator\bin\Release\NCalc.dll" target="lib\" />
   </files>
 </package>
