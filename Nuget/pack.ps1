@@ -1,11 +1,9 @@
 $root = (split-path -parent $MyInvocation.MyCommand.Definition) + '\..'
-$version = [System.Reflection.Assembly]::LoadFile("$root\Evaluant.Calculator\bin\Release\NCalc.dll").GetName().Version
-$versionStr = "{0}.{1}.{2}.{3}" -f ($version.Major, $version.Minor, $version.Build, $version.Revision)
 
-Write-Host "Setting .nuspec version tag to $versionStr"
+Write-Host "Setting .nuspec version tag to $env:APPVEYOR_BUILD_VERSION"
 
 $content = (Get-Content $root\NuGet\NCalc.nuspec)
-$content = $content -replace '\$version\$',$versionStr
+$content = $content -replace '\$version\$', $env:APPVEYOR_BUILD_VERSION
 
 $content | Out-File $root\nuget\NCalc.compiled.nuspec
 
