@@ -148,7 +148,7 @@ namespace NCalc.Domain
                     Result.Append("#").Append(expression.Value.ToString()).Append("#").Append(" ");
                     break;
 
-                case ValueType.Float:
+                case ValueType.Real:
                     Result.Append(decimal.Parse(expression.Value.ToString()).ToString(_numberFormatInfo)).Append(" ");
                     break;
 
