@@ -82,7 +82,7 @@ namespace NCalc.Tests
         [TestMethod]
         public void ShouldParseValues()
         {
-            Assert.AreEqual(123456, new Expression("123456").Evaluate());
+            Assert.AreEqual(123456L, new Expression("123456").Evaluate());
             Assert.AreEqual(new DateTime(2001, 01, 01), new Expression("#01/01/2001#").Evaluate());
             Assert.AreEqual(123.456d, new Expression("123.456").Evaluate());
             Assert.AreEqual(true, new Expression("true").Evaluate());
@@ -152,26 +152,26 @@ namespace NCalc.Tests
             e.EvaluateFunction += delegate(string name, FunctionArgs args)
                 {
                     if (name == "SecretOperation")
-                        args.Result = (int)args.Parameters[0].Evaluate() + (int)args.Parameters[1].Evaluate();
+                        args.Result = (long)args.Parameters[0].Evaluate() + (long)args.Parameters[1].Evaluate();
                 };
 
-            Assert.AreEqual(9, e.Evaluate());
+            Assert.AreEqual(9L, e.Evaluate());
         }
 
         [TestMethod]
         public void ExpressionShouldEvaluateCustomFunctionsWithParameters()
         {
             var e = new Expression("SecretOperation([e], 6) + f");
-            e.Parameters["e"] = 3;
-            e.Parameters["f"] = 1;
+            e.Parameters["e"] = 3L;
+            e.Parameters["f"] = 1L;
 
             e.EvaluateFunction += delegate(string name, FunctionArgs args)
                 {
                     if (name == "SecretOperation")
-                        args.Result = (int)args.Parameters[0].Evaluate() + (int)args.Parameters[1].Evaluate();
+                        args.Result = (long)args.Parameters[0].Evaluate() + (long)args.Parameters[1].Evaluate();
                 };
 
-            Assert.AreEqual(10, e.Evaluate());
+            Assert.AreEqual(10L, e.Evaluate());
         }
 
         [TestMethod]
@@ -203,7 +203,7 @@ namespace NCalc.Tests
             eif = new Expression("if([divider] <> 0, [divided] / [divider], 0)");
             eif.Parameters["divider"] = 0;
             eif.Parameters["divided"] = 5;
-            Assert.AreEqual(0, eif.Evaluate());
+            Assert.AreEqual(0L, eif.Evaluate());
         }
 
         [TestMethod]
@@ -252,11 +252,11 @@ namespace NCalc.Tests
                                   {
                                       {"!true", false},
                                       {"not false", true},
-                                      {"2 * 3", 6},
+                                      {"2 * 3", 6L},
                                       {"6 / 2", 3d},
-                                      {"7 % 2", 1},
-                                      {"2 + 3", 5},
-                                      {"2 - 1", 1},
+                                      {"7 % 2", 1L},
+                                      {"2 + 3", 5L},
+                                      {"2 - 1", 1L},
                                       {"1 < 2", true},
                                       {"1 > 2", false},
                                       {"1 <= 2", true},
@@ -277,8 +277,8 @@ namespace NCalc.Tests
                                       {"true and false", false},
                                       {"true || false", true},
                                       {"true or false", true},
-                                      {"if(true, 0, 1)", 0},
-                                      {"if(false, 0, 1)", 1}
+                                      {"if(true, 0, 1)", 0L},
+                                      {"if(false, 0, 1)", 1L}
                                   };
 
             foreach (KeyValuePair<string, object> pair in expressions)
@@ -291,10 +291,10 @@ namespace NCalc.Tests
         [TestMethod]
         public void ShouldHandleOperatorsPriority()
         {
-            Assert.AreEqual(8, new Expression("2+2+2+2").Evaluate());
-            Assert.AreEqual(16, new Expression("2*2*2*2").Evaluate());
-            Assert.AreEqual(6, new Expression("2*2+2").Evaluate());
-            Assert.AreEqual(6, new Expression("2+2*2").Evaluate());
+            Assert.AreEqual(8L, new Expression("2+2+2+2").Evaluate());
+            Assert.AreEqual(16L, new Expression("2*2*2*2").Evaluate());
+            Assert.AreEqual(6L, new Expression("2*2+2").Evaluate());
+            Assert.AreEqual(6L, new Expression("2+2*2").Evaluate());
 
             Assert.AreEqual(9d, new Expression("1 + 2 + 3 * 4 / 2").Evaluate());
             Assert.AreEqual(13.5, new Expression("18/2/2*3").Evaluate());
@@ -329,7 +329,7 @@ namespace NCalc.Tests
         [TestMethod]
         public void ShouldEvaluateTernaryExpression()
         {
-            Assert.AreEqual(1, new Expression("1+2<3 ? 3+4 : 1").Evaluate());
+            Assert.AreEqual(1L, new Expression("1+2<3 ? 3+4 : 1").Evaluate());
         }
 
         [TestMethod]
@@ -434,8 +434,8 @@ namespace NCalc.Tests
             {
                 var r1 = new Random((int)DateTime.Now.Ticks);
                 var r2 = new Random((int)DateTime.Now.Ticks);
-                int n1 = r1.Next(10);
-                int n2 = r2.Next(10);
+                long n1 = r1.Next(10);
+                long n2 = r2.Next(10);
 
                 // Constructs a simple addition randomly. Odds are that the same expression gets constructed multiple times by different threads
                 var exp = n1 + " + " + n2;
@@ -607,7 +607,7 @@ namespace NCalc.Tests
         [TestMethod]
         public void ShouldHandleLongValues()
         {
-            Assert.AreEqual(40000000000 + 1f, new Expression("40000000000+1").Evaluate());
+            Assert.AreEqual(int.MaxValue + 1L, new Expression(int.MaxValue + "+1").Evaluate());
         }
 
         [TestMethod]
