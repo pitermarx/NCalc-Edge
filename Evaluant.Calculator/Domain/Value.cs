@@ -25,7 +25,7 @@ namespace NCalc.Domain
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                 case TypeCode.Single:
-                    Type = ValueType.Float;
+                    Type = ValueType.Real;
                     break;
 
                 case TypeCode.Byte:
@@ -56,16 +56,16 @@ namespace NCalc.Domain
             Type = ValueType.String;
         }
 
-        public ValueExpression(int value)
+        public ValueExpression(long value)
         {
             Value = value;
             Type = ValueType.Integer;
         }
 
-        public ValueExpression(float value)
+        public ValueExpression(double value)
         {
             Value = value;
-            Type = ValueType.Float;
+            Type = ValueType.Real;
         }
 
         public ValueExpression(DateTime value)
@@ -94,7 +94,7 @@ namespace NCalc.Domain
 		Integer,
 		String,
 		DateTime,
-		Float,
+		Real,
 		Boolean
 	}
 }
