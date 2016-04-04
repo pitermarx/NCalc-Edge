@@ -664,6 +664,24 @@ namespace NCalc.Tests
 
             Assert.AreEqual(11M, e.Evaluate());
         }
-    }
+
+		[TestMethod]
+		public void ShouldCompareNullableToNonNullable() {
+			var e = new Expression("[x] = 5");
+
+			e.Parameters["x"] = (int?)5;
+			Assert.IsTrue((bool)e.Evaluate());
+
+			e.Parameters["x"] = (int?)6;
+			Assert.IsFalse((bool)e.Evaluate());
+		}
+
+		[TestMethod]
+		public void ShouldCompareNullToString() {
+			var e = new Expression("[x] = 'foo'");
+			e.Parameters["x"] = null;
+			Assert.IsFalse((bool)e.Evaluate());
+		}
+	}
 }
 

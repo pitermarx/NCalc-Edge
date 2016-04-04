@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NCalc.Domain
 {
@@ -32,30 +33,18 @@ namespace NCalc.Domain
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private static Type[] CommonTypes = new[] { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
+        private static Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
-    /// <summary>
-        /// Gets the the most precise type.
-        /// </summary>
-        /// <param name="a">Type a.</param>
-        /// <param name="b">Type b.</param>
-        /// <returns></returns>
-        private static Type GetMostPreciseType(Type a, Type b)
-        {
-            foreach (Type t in CommonTypes)
-            {
-                if (a == t || b == t)
-                {
-                    return t;
-                }
-            }
-
-            return a;
+        private static Type GetMostPreciseType(object a, object b) 
+		{
+	        var t1 = (a == null) ? null : a.GetType();
+	        var t2 = (b == null) ? null : b.GetType();
+	        return CommonTypes.FirstOrDefault(t => t1 == t || t2 == t) ?? t1;
         }
 
         public int CompareUsingMostPreciseType(object a, object b)
         {
-            Type mpt = GetMostPreciseType(a.GetType(), b.GetType());
+            Type mpt = GetMostPreciseType(a, b);
             return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
         }
 
