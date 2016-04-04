@@ -19,6 +19,24 @@ namespace NCalc.Domain
         {
             visitor.Visit(this);
         }
+
+		public bool IsBoolean {
+			get {
+				switch (Type) {
+					case BinaryExpressionType.And:
+					case BinaryExpressionType.Or:
+					case BinaryExpressionType.NotEqual:
+					case BinaryExpressionType.LesserOrEqual:
+					case BinaryExpressionType.GreaterOrEqual:
+					case BinaryExpressionType.Lesser:
+					case BinaryExpressionType.Greater:
+					case BinaryExpressionType.Equal:
+						return true;
+					default:
+						return false;
+				}
+			}
+		}
     }
 
 	public enum BinaryExpressionType

@@ -33,7 +33,7 @@ namespace NCalc.Domain
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private static Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
+        private static Type[] CommonTypes = { typeof(DateTime), typeof(Decimal), typeof(Double), typeof(Single), typeof(Int64), typeof(Int32), typeof(Int16), typeof(Boolean), typeof(String) };
 
         private static Type GetMostPreciseType(object a, object b) 
 		{
@@ -71,7 +71,32 @@ namespace NCalc.Domain
             return typeCode == TypeCode.Decimal || typeCode == TypeCode.Double || typeCode == TypeCode.Single;
         }
 
-        public override void Visit(BinaryExpression expression)
+	    public override void Visit(BinaryExpression expression) {
+		    try {
+			    InnerVisit(expression);
+		    }
+		    catch (FormatException ex) {
+				HandleTypeMismatch(expression, ex);
+			}
+			catch (InvalidCastException ex) {
+			    HandleTypeMismatch(expression, ex);
+			}
+		}
+
+	    private void HandleTypeMismatch(BinaryExpression expression, Exception innerException) {
+		    if ((_options & EvaluateOptions.WeakTypeChecking) == EvaluateOptions.WeakTypeChecking && expression.IsBoolean) {
+			    Result = (expression.Type == BinaryExpressionType.NotEqual);
+			    return;
+		    }
+
+		    var msg = "Expression contains operation against incompatible types.";
+			if (expression.IsBoolean)
+				msg += " Use EvaluateOptions.WeakTypeChecking to evaluate to false.";
+
+		    throw new EvaluationException(msg, innerException);
+	    }
+
+		private void InnerVisit(BinaryExpression expression)
         {
             // simulate Lazy<Func<>> behavior for late evaluation
             object leftValue = null;

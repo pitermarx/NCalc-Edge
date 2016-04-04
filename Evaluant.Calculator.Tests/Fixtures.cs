@@ -690,18 +690,47 @@ namespace NCalc.Tests
 			Assert.IsFalse((bool)e.Evaluate());
 		}
 
-		[TestMethod]
-		public void ShouldCompareNullToInt() {
-			var e = new Expression("[x] = 5");
-			e.Parameters["x"] = null;
-			Assert.IsFalse((bool)e.Evaluate());
-		}
+	    [TestMethod]
+	    public void ShouldCompareIncompatibleTypes() {
+		    Action<string, object, bool> test = (exp, paramVal, result) => {
+				var threw = false;
+				var e = new Expression(exp);
+				e.Parameters["x"] = paramVal;
 
-		[TestMethod]
-		public void ShouldCompareNullToDate() {
-			var e = new Expression("[x] = #1/1/2016#");
-			e.Parameters["x"] = null;
-			Assert.IsFalse((bool)e.Evaluate());
+				// expressions should throw EvaluationException when WeakTypeChecking is off
+			    try {
+				    e.Evaluate();
+			    }
+			    catch (EvaluationException) {
+					threw = true;
+			    }
+			    Assert.IsTrue(threw, "\"{0}\" with param {1} and without WeakTypeChecking should have thrown an EvaluationException.", exp, paramVal);
+
+				// same expression shoule evalute to false when WeakTypeChecking is on
+				e.Options = e.Options | EvaluateOptions.WeakTypeChecking;
+			    Assert.AreEqual(result, e.Evaluate());
+		    };
+
+			test("[x] = 'foo'", 5, false);
+			test("[x] = 5", "foo", false);
+			test("[x] > 'foo'", 5, false);
+			test("[x] > 5", "foo", false);
+			test("[x] < 'foo'", 5.1, false);
+			test("[x] < 5.1", "foo", false);
+			test("[x] and 'foo'", 5, false);
+			test("[x] or 5", "foo", false);
+			test("[x] = #1/1/2016#", 5, false);
+			test("[x] = 5", DateTime.Parse("1/1/2016"), false);
+			test("[x] = 5", null, false);
+			test("[x] = null", 5, false);
+			test("[x] = #1/1/2016#", null, false);
+			test("[x] = null", DateTime.Parse("1/1/2016"), false);
+
+			// inequality of incompatible types should evaluate to true
+			test("[x] <> 'foo'", 5, true);
+			test("[x] != 5", "foo", true);
+			test("[x] <> null", 5, true);
+			test("[x] != 5", null, true);
 		}
 	}
 }
