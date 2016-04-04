@@ -677,6 +677,13 @@ namespace NCalc.Tests
 		}
 
 		[TestMethod]
+		public void ShouldCompareNullToNull() {
+			var e = new Expression("[x] = null");
+			e.Parameters["x"] = null;
+			Assert.IsTrue((bool)e.Evaluate());
+		}
+
+		[TestMethod]
 		public void ShouldCompareNullToString() {
 			var e = new Expression("[x] = 'foo'");
 			e.Parameters["x"] = null;

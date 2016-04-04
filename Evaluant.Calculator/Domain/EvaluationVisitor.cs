@@ -37,8 +37,8 @@ namespace NCalc.Domain
 
         private static Type GetMostPreciseType(object a, object b) 
 		{
-	        var t1 = (a == null) ? null : a.GetType();
-	        var t2 = (b == null) ? null : b.GetType();
+	        var t1 = (a == null) ? typeof(object) : a.GetType();
+	        var t2 = (b == null) ? typeof(object) : b.GetType();
 	        return CommonTypes.FirstOrDefault(t => t1 == t || t2 == t) ?? t1;
         }
 
@@ -647,10 +647,12 @@ namespace NCalc.Domain
                 // Calls external implementation
                 OnEvaluateParameter(parameter.Name, args);
 
-                if (!args.HasResult)
+				if (args.HasResult)
+					Result = args.Result;
+				else if (parameter.Name.Equals("null", StringComparison.InvariantCulture))
+					Result = null;
+				else
                     throw new ArgumentException("Parameter was not defined", parameter.Name);
-
-                Result = args.Result;
             }
         }
 
