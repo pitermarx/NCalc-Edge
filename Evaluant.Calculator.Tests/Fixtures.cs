@@ -689,6 +689,20 @@ namespace NCalc.Tests
 			e.Parameters["x"] = null;
 			Assert.IsFalse((bool)e.Evaluate());
 		}
+
+		[TestMethod]
+		public void ShouldCompareNullToInt() {
+			var e = new Expression("[x] = 5");
+			e.Parameters["x"] = null;
+			Assert.IsFalse((bool)e.Evaluate());
+		}
+
+		[TestMethod]
+		public void ShouldCompareNullToDate() {
+			var e = new Expression("[x] = #1/1/2016#");
+			e.Parameters["x"] = null;
+			Assert.IsFalse((bool)e.Evaluate());
+		}
 	}
 }
 
