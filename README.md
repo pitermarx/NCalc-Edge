@@ -1,6 +1,6 @@
 # NCalc-Edge
 
-[![Join the chat at https://gitter.im/pitermarx/NCalc-Edge](https://badges.gitter.im/pitermarx/NCalc-Edge.svg)](https://gitter.im/pitermarx/NCalc-Edge?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A clone of NCalc. http://ncalc.codeplex.com/. 
 
 Versions Published to Nuget.org:
@@ -13,3 +13,4 @@ Versions Published to Nuget.org:
   
 [![Nuget](https://img.shields.io/nuget/v/NCalc-Edge.svg)](https://nuget.org/packages/NCalc-Edge/)
 [![Build status](https://ci.appveyor.com/api/projects/status/hh529inyi2w8rpln/branch/master?svg=true)](https://ci.appveyor.com/project/pitermarx/ncalc-edge/branch/master)
+[![Join the chat at https://gitter.im/pitermarx/NCalc-Edge](https://badges.gitter.im/pitermarx/NCalc-Edge.svg)](https://gitter.im/pitermarx/NCalc-Edge?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
