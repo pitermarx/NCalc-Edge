@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NCalc.Domain
 {
@@ -32,30 +33,18 @@ namespace NCalc.Domain
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private static Type[] CommonTypes = new[] { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
+        private static Type[] CommonTypes = { typeof(DateTime), typeof(Decimal), typeof(Double), typeof(Single), typeof(Int64), typeof(Int32), typeof(Int16), typeof(Boolean), typeof(String) };
 
-    /// <summary>
-        /// Gets the the most precise type.
-        /// </summary>
-        /// <param name="a">Type a.</param>
-        /// <param name="b">Type b.</param>
-        /// <returns></returns>
-        private static Type GetMostPreciseType(Type a, Type b)
-        {
-            foreach (Type t in CommonTypes)
-            {
-                if (a == t || b == t)
-                {
-                    return t;
-                }
-            }
-
-            return a;
+        private static Type GetMostPreciseType(object a, object b) 
+		{
+	        var t1 = (a == null) ? typeof(object) : a.GetType();
+	        var t2 = (b == null) ? typeof(object) : b.GetType();
+	        return CommonTypes.FirstOrDefault(t => t1 == t || t2 == t) ?? t1;
         }
 
         public int CompareUsingMostPreciseType(object a, object b)
         {
-            Type mpt = GetMostPreciseType(a.GetType(), b.GetType());
+            Type mpt = GetMostPreciseType(a, b);
             return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
         }
 
@@ -82,7 +71,32 @@ namespace NCalc.Domain
             return typeCode == TypeCode.Decimal || typeCode == TypeCode.Double || typeCode == TypeCode.Single;
         }
 
-        public override void Visit(BinaryExpression expression)
+	    public override void Visit(BinaryExpression expression) {
+		    try {
+			    InnerVisit(expression);
+		    }
+		    catch (FormatException ex) {
+				HandleTypeMismatch(expression, ex);
+			}
+			catch (InvalidCastException ex) {
+			    HandleTypeMismatch(expression, ex);
+			}
+		}
+
+	    private void HandleTypeMismatch(BinaryExpression expression, Exception innerException) {
+		    if ((_options & EvaluateOptions.WeakTypeChecking) == EvaluateOptions.WeakTypeChecking && expression.IsBoolean) {
+			    Result = (expression.Type == BinaryExpressionType.NotEqual);
+			    return;
+		    }
+
+		    var msg = "Expression contains operation against incompatible types.";
+			if (expression.IsBoolean)
+				msg += " Use EvaluateOptions.WeakTypeChecking to evaluate to false.";
+
+		    throw new EvaluationException(msg, innerException);
+	    }
+
+		private void InnerVisit(BinaryExpression expression)
         {
             // simulate Lazy<Func<>> behavior for late evaluation
             object leftValue = null;
@@ -658,10 +672,12 @@ namespace NCalc.Domain
                 // Calls external implementation
                 OnEvaluateParameter(parameter.Name, args);
 
-                if (!args.HasResult)
+				if (args.HasResult)
+					Result = args.Result;
+				else if (parameter.Name.Equals("null", StringComparison.InvariantCulture))
+					Result = null;
+				else
                     throw new ArgumentException("Parameter was not defined", parameter.Name);
-
-                Result = args.Result;
             }
         }
 
