@@ -1,4 +1,6 @@
 # NCalc-Edge
+
+[![Join the chat at https://gitter.im/pitermarx/NCalc-Edge](https://badges.gitter.im/pitermarx/NCalc-Edge.svg)](https://gitter.im/pitermarx/NCalc-Edge?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A clone of NCalc. http://ncalc.codeplex.com/. 
 
 Versions Published to Nuget.org:
