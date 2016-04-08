@@ -1,9 +1,12 @@
 # NCalc-Edge
 
 
-A clone of NCalc. http://ncalc.codeplex.com/. 
-This repo will *never* have breaking changes.
+A clone of NCalc. http://ncalc.codeplex.com/.
+
+This repo will *never* have breaking changes
+
 Some bugfixes and minor features may be added
+
 See [Changelog](https://github.com/pitermarx/NCalc-Edge/wiki/Changelog) for more details
 
   
