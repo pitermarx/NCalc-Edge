@@ -4,34 +4,34 @@ namespace NCalc
 {
     public class FunctionArgs : EventArgs
     {
+        private object result;
 
-        private object _result;
         public object Result
         {
-            get { return _result; }
-            set 
-            { 
-                _result = value;
+            get { return result; }
+            set
+            {
+                result = value;
                 HasResult = true;
             }
         }
 
         public bool HasResult { get; set; }
 
-        private Expression[] _parameters = new Expression[0];
+        private Expression[] parameters = new Expression[0];
 
         public Expression[] Parameters
         {
-            get { return _parameters; }
-            set { _parameters = value; }
+            get { return parameters; }
+            set { parameters = value; }
         }
 
         public object[] EvaluateParameters()
         {
-            var values = new object[_parameters.Length];
+            var values = new object[parameters.Length];
             for (int i = 0; i < values.Length; i++)
             {
-                values[i] = _parameters[i].Evaluate();
+                values[i] = parameters[i].Evaluate();
             }
 
             return values;

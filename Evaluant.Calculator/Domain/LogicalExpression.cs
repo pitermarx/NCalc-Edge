@@ -1,16 +1,14 @@
 using System;
-using Antlr.Runtime.Tree;
 using System.Text;
 
 namespace NCalc.Domain
 {
     public abstract class LogicalExpression
     {
-        const char BS = '\\';
+        private const char BS = '\\';
 
         private static string extractString(string text)
         {
-
             StringBuilder sb = new StringBuilder(text);
             int startIndex = 1; // Skip initial quote
             int slashIndex = -1;
@@ -26,6 +24,7 @@ namespace NCalc.Domain
                         char unicodeChar = Encoding.Unicode.GetChars(new byte[] { System.Convert.ToByte(hcode, 16), System.Convert.ToByte(lcode, 16) })[0];
                         sb.Remove(slashIndex, 6).Insert(slashIndex, unicodeChar);
                         break;
+
                     case 'n': sb.Remove(slashIndex, 2).Insert(slashIndex, '\n'); break;
                     case 'r': sb.Remove(slashIndex, 2).Insert(slashIndex, '\r'); break;
                     case 't': sb.Remove(slashIndex, 2).Insert(slashIndex, '\t'); break;
@@ -35,7 +34,6 @@ namespace NCalc.Domain
                 }
 
                 startIndex = slashIndex + 1;
-
             }
 
             sb.Remove(0, 1);

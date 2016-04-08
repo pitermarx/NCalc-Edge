@@ -4,13 +4,14 @@ namespace NCalc
 {
     public class ParameterArgs : EventArgs
     {
-        private object _result;
+        private object result;
+
         public object Result
         {
-            get { return _result; }
+            get { return result; }
             set
             {
-                _result = value;
+                result = value;
                 HasResult = true;
             }
         }

@@ -70,7 +70,7 @@
     <Compile Include="NCalcParser.cs" />
     <Compile Include="Numbers.cs" />
     <Compile Include="ParameterArgs.cs" />
-    <Compile Include="Domain\Parameter.cs" />
+    <Compile Include="Domain\Identifier.cs" />
     <Compile Include="EvaluateParameterHandler.cs" />
     <Compile Include="Domain\BinaryExpression.cs" />
     <Compile Include="Domain\Function.cs" />

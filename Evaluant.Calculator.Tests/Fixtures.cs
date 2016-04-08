@@ -1,8 +1,8 @@
 ﻿using System;
-using NCalc.Domain;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Collections;
+using NCalc.Domain;
 using NUnit.Framework;
 using ThreadState = System.Threading.ThreadState;
 
@@ -14,7 +14,7 @@ namespace NCalc.Tests
         [Test]
         public void ExpressionShouldEvaluate()
         {
-            var expressions = new []
+            var expressions = new[]
             {
                 "2 + 3 + 5",
                 "2 * 3 + 5",
@@ -70,7 +70,7 @@ namespace NCalc.Tests
                 new Expression("(3 + 2").Evaluate();
                 Assert.Fail();
             }
-            catch(EvaluationException e)
+            catch (EvaluationException e)
             {
                 Console.WriteLine("Error catched: " + e.Message);
             }
@@ -130,21 +130,21 @@ namespace NCalc.Tests
         }
 
         [Test]
-		public void ExpressionShouldEvaluateParameters()
-		{
-			var e = new Expression("Round(Pow(Pi, 2) + Pow([Pi Squared], 2) + [X], 2)");
+        public void ExpressionShouldEvaluateParameters()
+        {
+            var e = new Expression("Round(Pow(Pi, 2) + Pow([Pi Squared], 2) + [X], 2)");
 
-			e.Parameters["Pi Squared"] = new Expression("Pi * [Pi]");
-			e.Parameters["X"] = 10;
+            e.Parameters["Pi Squared"] = new Expression("Pi * [Pi]");
+            e.Parameters["X"] = 10;
 
-			e.EvaluateParameter += delegate(string name, ParameterArgs args)
-				{
-					if (name == "Pi")
-						args.Result = 3.14;
-				};
+            e.EvaluateParameter += delegate(string name, ParameterArgs args)
+                {
+                    if (name == "Pi")
+                        args.Result = 3.14;
+                };
 
-			Assert.AreEqual(117.07, e.Evaluate());
-		}
+            Assert.AreEqual(117.07, e.Evaluate());
+        }
 
         [Test]
         public void ShouldEvaluateConditionnal()
@@ -197,7 +197,6 @@ namespace NCalc.Tests
             var estring = new Expression("in('to' + 'to', 'titi', 'toto')");
 
             Assert.AreEqual(true, estring.Evaluate());
-
         }
 
         [Test]
@@ -240,7 +239,6 @@ namespace NCalc.Tests
             {
                 Assert.AreEqual(pair.Value, new Expression(pair.Key).Evaluate(), pair.Key + " failed");
             }
-
         }
 
         [Test]
@@ -304,10 +302,10 @@ namespace NCalc.Tests
             Assert.AreEqual("1 + 2", new BinaryExpression(BinaryExpressionType.Plus, new ValueExpression(1), new ValueExpression(2)).ToString());
             Assert.AreEqual("1 * 2", new BinaryExpression(BinaryExpressionType.Times, new ValueExpression(1), new ValueExpression(2)).ToString());
 
-            Assert.AreEqual("-(True and False)",new UnaryExpression(UnaryExpressionType.Negate, new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false))).ToString());
-            Assert.AreEqual("!(True and False)",new UnaryExpression(UnaryExpressionType.Not, new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false))).ToString());
+            Assert.AreEqual("-(True and False)", new UnaryExpression(UnaryExpressionType.Negate, new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false))).ToString());
+            Assert.AreEqual("!(True and False)", new UnaryExpression(UnaryExpressionType.Not, new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false))).ToString());
 
-            Assert.AreEqual("test(True and False, -(True and False))",new Function(new Identifier("test"), new LogicalExpression[] { new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false)), new UnaryExpression(UnaryExpressionType.Negate, new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false))) }).ToString());
+            Assert.AreEqual("test(True and False, -(True and False))", new Function(new Identifier("test"), new LogicalExpression[] { new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false)), new UnaryExpression(UnaryExpressionType.Negate, new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false))) }).ToString());
 
             Assert.AreEqual("True", new ValueExpression(true).ToString());
             Assert.AreEqual("False", new ValueExpression(false).ToString());
@@ -316,7 +314,7 @@ namespace NCalc.Tests
             Assert.AreEqual("'hello'", new ValueExpression("hello").ToString());
             Assert.AreEqual("#" + new DateTime(2009, 1, 1) + "#", new ValueExpression(new DateTime(2009, 1, 1)).ToString());
 
-            Assert.AreEqual("Sum(1 + 2)", new Function(new Identifier("Sum"), new [] { new BinaryExpression(BinaryExpressionType.Plus, new ValueExpression(1), new ValueExpression(2))}).ToString());
+            Assert.AreEqual("Sum(1 + 2)", new Function(new Identifier("Sum"), new[] { new BinaryExpression(BinaryExpressionType.Plus, new ValueExpression(1), new ValueExpression(2)) }).ToString());
         }
 
         [Test]
@@ -450,8 +448,10 @@ namespace NCalc.Tests
                 {
                     case "func1": arg.Result = 1;
                         break;
+
                     case "func2": arg.Result = 2 * Convert.ToDouble(arg.Parameters[0].Evaluate());
                         break;
+
                     case "func3": arg.Result = 3 * Convert.ToDouble(arg.Parameters[0].Evaluate());
                         break;
                 }
@@ -463,8 +463,10 @@ namespace NCalc.Tests
                 {
                     case "x": arg.Result = 1;
                         break;
+
                     case "y": arg.Result = 2;
                         break;
+
                     case "z": arg.Result = 3;
                         break;
                 }
@@ -472,7 +474,6 @@ namespace NCalc.Tests
 
             Assert.AreEqual(13d, e.Evaluate());
         }
-
 
         [Test]
         public void ShouldParseScientificNotation()
@@ -489,7 +490,7 @@ namespace NCalc.Tests
         public void ShouldEvaluateArrayParameters()
         {
             var e = new Expression("x * x", EvaluateOptions.IterateParameters);
-            e.Parameters["x"] = new [] { 0, 1, 2, 3, 4 };
+            e.Parameters["x"] = new[] { 0, 1, 2, 3, 4 };
 
             var result = (IList)e.Evaluate();
 
@@ -599,7 +600,6 @@ namespace NCalc.Tests
             e.Parameters["a"] = 20M;
             e.Parameters["b"] = 20M;
             Assert.AreEqual(100M, e.Evaluate());
-
         }
 
         [Test]
@@ -621,4 +621,3 @@ namespace NCalc.Tests
         }
     }
 }
-

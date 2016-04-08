@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using NCalc.Domain;
-using Antlr.Runtime;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using Antlr.Runtime;
+using NCalc.Domain;
 
 namespace NCalc
 {
@@ -17,25 +18,17 @@ namespace NCalc
         /// </summary>
         protected string OriginalExpression;
 
-        public Expression(string expression) : this(expression, EvaluateOptions.None)
-        {
-        }
-
-        public Expression(string expression, EvaluateOptions options)
+        public Expression(string expression, EvaluateOptions options = EvaluateOptions.None)
         {
             if (String.IsNullOrEmpty(expression))
-                throw new 
+                throw new
                     ArgumentException("Expression can't be empty", "expression");
 
             OriginalExpression = expression;
             Options = options;
         }
 
-        public Expression(LogicalExpression expression) : this(expression, EvaluateOptions.None)
-        {
-        }
-
-        public Expression(LogicalExpression expression, EvaluateOptions options)
+        public Expression(LogicalExpression expression, EvaluateOptions options = EvaluateOptions.None)
         {
             if (expression == null)
                 throw new
@@ -46,21 +39,22 @@ namespace NCalc
         }
 
         #region Cache management
-        private static bool _cacheEnabled = true;
-        private static Dictionary<string, WeakReference> _compiledExpressions = new Dictionary<string, WeakReference>();
+
+        private static bool cacheEnabled = true;
+        private static Dictionary<string, WeakReference> compiledExpressions = new Dictionary<string, WeakReference>();
         private static readonly ReaderWriterLock Rwl = new ReaderWriterLock();
 
         public static bool CacheEnabled
         {
-            get { return _cacheEnabled; }
-            set 
-            { 
-                _cacheEnabled = value;
+            get { return cacheEnabled; }
+            set
+            {
+                cacheEnabled = value;
 
                 if (!CacheEnabled)
                 {
                     // Clears cache
-                    _compiledExpressions = new Dictionary<string, WeakReference>();
+                    compiledExpressions = new Dictionary<string, WeakReference>();
                 }
             }
         }
@@ -75,18 +69,11 @@ namespace NCalc
             try
             {
                 Rwl.AcquireWriterLock(Timeout.Infinite);
-                foreach (var de in _compiledExpressions)
-                {
-                    if (!de.Value.IsAlive)
-                    {
-                        keysToRemove.Add(de.Key);
-                    }
-                }
-
+                keysToRemove.AddRange(compiledExpressions.Where(de => !de.Value.IsAlive).Select(de => de.Key));
 
                 foreach (string key in keysToRemove)
                 {
-                    _compiledExpressions.Remove(key);
+                    compiledExpressions.Remove(key);
                     Trace.TraceInformation("Cache entry released: " + key);
                 }
             }
@@ -96,24 +83,24 @@ namespace NCalc
             }
         }
 
-        #endregion
+        #endregion Cache management
 
         public static LogicalExpression Compile(string expression, bool nocache)
         {
             LogicalExpression logicalExpression = null;
 
-            if (_cacheEnabled && !nocache)
+            if (cacheEnabled && !nocache)
             {
                 try
                 {
                     Rwl.AcquireReaderLock(Timeout.Infinite);
 
-                    if (_compiledExpressions.ContainsKey(expression))
+                    if (compiledExpressions.ContainsKey(expression))
                     {
                         Trace.TraceInformation("Expression retrieved from cache: " + expression);
-                        var wr = _compiledExpressions[expression];
+                        var wr = compiledExpressions[expression];
                         logicalExpression = wr.Target as LogicalExpression;
-                    
+
                         if (wr.IsAlive && logicalExpression != null)
                         {
                             return logicalExpression;
@@ -138,12 +125,12 @@ namespace NCalc
                     throw new EvaluationException(String.Join(Environment.NewLine, parser.Errors.ToArray()));
                 }
 
-                if (_cacheEnabled && !nocache)
+                if (cacheEnabled && !nocache)
                 {
                     try
                     {
                         Rwl.AcquireWriterLock(Timeout.Infinite);
-                        _compiledExpressions[expression] = new WeakReference(logicalExpression);
+                        compiledExpressions[expression] = new WeakReference(logicalExpression);
                     }
                     finally
                     {
@@ -176,7 +163,7 @@ namespace NCalc
                 // In case HasErrors() is called multiple times for the same expression
                 return ParsedExpression != null && Error != null;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error = e.Message;
                 return true;
@@ -202,7 +189,6 @@ namespace NCalc
                 ParsedExpression = Compile(OriginalExpression, (Options & EvaluateOptions.NoCache) == EvaluateOptions.NoCache);
             }
 
-
             var visitor = new EvaluationVisitor(Options);
             visitor.EvaluateFunction += EvaluateFunction;
             visitor.EvaluateParameter += EvaluateParameter;
@@ -222,13 +208,10 @@ namespace NCalc
 
                 foreach (object parameter in Parameters.Values)
                 {
-                    if (parameter is IEnumerable)
+                    var enumerable = parameter as IEnumerable;
+                    if (enumerable != null)
                     {
-                        int localsize = 0;
-                        foreach (object o in (IEnumerable)parameter)
-                        {
-                            localsize++;
-                        }
+                        int localsize = enumerable.Cast<object>().Count();
 
                         if (size == -1)
                         {
@@ -269,19 +252,18 @@ namespace NCalc
 
             ParsedExpression.Accept(visitor);
             return visitor.Result;
-            
         }
 
         public event EvaluateFunctionHandler EvaluateFunction;
+
         public event EvaluateParameterHandler EvaluateParameter;
 
-        private Dictionary<string, object> _parameters;
+        private Dictionary<string, object> parameters;
 
         public Dictionary<string, object> Parameters
         {
-            get { return _parameters ?? (_parameters = new Dictionary<string, object>()); }
-            set { _parameters = value; }
+            get { return parameters ?? (parameters = new Dictionary<string, object>()); }
+            set { parameters = value; }
         }
-
     }
 }

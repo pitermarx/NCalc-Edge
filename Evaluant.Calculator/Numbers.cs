@@ -6,7 +6,7 @@ namespace NCalc
     {
         private static object ConvertIfString(object s)
         {
-            if (s is String|| s is char)
+            if (s is String || s is char)
             {
                 return Decimal.Parse(s.ToString());
             }
@@ -27,9 +27,9 @@ namespace NCalc
                 case TypeCode.Boolean:
                     switch (typeCodeB)
                     {
-                        case TypeCode.Boolean: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'bool'"); 
-                        case TypeCode.Byte: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'"); 
-                        case TypeCode.SByte: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'"); 
+                        case TypeCode.Boolean: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'bool'");
+                        case TypeCode.Byte: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'");
+                        case TypeCode.SByte: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'");
                         case TypeCode.Int16: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'");
                         case TypeCode.UInt16: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'");
                         case TypeCode.Int32: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'");
@@ -41,6 +41,7 @@ namespace NCalc
                         case TypeCode.Decimal: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'bool' and 'byte'");
                     }
                     break;
+
                 case TypeCode.Byte:
                     switch (typeCodeB)
                     {
@@ -58,6 +59,7 @@ namespace NCalc
                         case TypeCode.Decimal: return (Byte)a + (Decimal)b;
                     }
                     break;
+
                 case TypeCode.SByte:
                     switch (typeCodeB)
                     {
@@ -269,6 +271,7 @@ namespace NCalc
                         case TypeCode.Decimal: throw new InvalidOperationException("Operator '-' can't be applied to operands of types 'bool' and 'byte'");
                     }
                     break;
+
                 case TypeCode.Byte:
                     switch (typeCodeB)
                     {
@@ -285,6 +288,7 @@ namespace NCalc
                         case TypeCode.Decimal: return (Byte)a - (Decimal)b;
                     }
                     break;
+
                 case TypeCode.SByte:
                     switch (typeCodeB)
                     {
@@ -458,6 +462,7 @@ namespace NCalc
 
             return null;
         }
+
         public static object Multiply(object a, object b)
         {
             a = ConvertIfString(a);
@@ -484,6 +489,7 @@ namespace NCalc
                         case TypeCode.Decimal: return (Byte)a * (Decimal)b;
                     }
                     break;
+
                 case TypeCode.SByte:
                     switch (typeCodeB)
                     {
@@ -657,6 +663,7 @@ namespace NCalc
 
             return null;
         }
+
         public static object Divide(object a, object b)
         {
             a = ConvertIfString(a);
@@ -683,6 +690,7 @@ namespace NCalc
                         case TypeCode.Decimal: return (Byte)a / (Decimal)b;
                     }
                     break;
+
                 case TypeCode.SByte:
                     switch (typeCodeB)
                     {
@@ -883,6 +891,7 @@ namespace NCalc
                         case TypeCode.Decimal: return (Byte)a % (Decimal)b;
                     }
                     break;
+
                 case TypeCode.SByte:
                     switch (typeCodeB)
                     {
@@ -1056,6 +1065,7 @@ namespace NCalc
 
             return null;
         }
+
         public static object Max(object a, object b)
         {
             a = ConvertIfString(a);
@@ -1082,30 +1092,41 @@ namespace NCalc
             {
                 case TypeCode.Byte:
                     return Math.Max((Byte)a, Convert.ToByte(b));
+
                 case TypeCode.SByte:
                     return Math.Max((SByte)a, Convert.ToSByte(b));
+
                 case TypeCode.Int16:
                     return Math.Max((Int16)a, Convert.ToInt16(b));
+
                 case TypeCode.UInt16:
                     return Math.Max((UInt16)a, Convert.ToUInt16(b));
+
                 case TypeCode.Int32:
                     return Math.Max((Int32)a, Convert.ToInt32(b));
+
                 case TypeCode.UInt32:
                     return Math.Max((UInt32)a, Convert.ToUInt32(b));
+
                 case TypeCode.Int64:
                     return Math.Max((Int64)a, Convert.ToInt64(b));
+
                 case TypeCode.UInt64:
                     return Math.Max((UInt64)a, Convert.ToUInt64(b));
+
                 case TypeCode.Single:
                     return Math.Max((Single)a, Convert.ToSingle(b));
+
                 case TypeCode.Double:
                     return Math.Max((Double)a, Convert.ToDouble(b));
+
                 case TypeCode.Decimal:
                     return Math.Max((Decimal)a, Convert.ToDecimal(b));
             }
 
             return null;
         }
+
         public static object Min(object a, object b)
         {
             a = ConvertIfString(a);
@@ -1132,30 +1153,39 @@ namespace NCalc
             {
                 case TypeCode.Byte:
                     return Math.Min((Byte)a, Convert.ToByte(b));
+
                 case TypeCode.SByte:
                     return Math.Min((SByte)a, Convert.ToSByte(b));
+
                 case TypeCode.Int16:
                     return Math.Min((Int16)a, Convert.ToInt16(b));
+
                 case TypeCode.UInt16:
                     return Math.Min((UInt16)a, Convert.ToUInt16(b));
+
                 case TypeCode.Int32:
                     return Math.Min((Int32)a, Convert.ToInt32(b));
+
                 case TypeCode.UInt32:
                     return Math.Min((UInt32)a, Convert.ToUInt32(b));
+
                 case TypeCode.Int64:
                     return Math.Min((Int64)a, Convert.ToInt64(b));
+
                 case TypeCode.UInt64:
                     return Math.Min((UInt64)a, Convert.ToUInt64(b));
+
                 case TypeCode.Single:
                     return Math.Min((Single)a, Convert.ToSingle(b));
+
                 case TypeCode.Double:
                     return Math.Min((Double)a, Convert.ToDouble(b));
+
                 case TypeCode.Decimal:
                     return Math.Min((Decimal)a, Convert.ToDecimal(b));
             }
 
             return null;
         }
-
     }
 }

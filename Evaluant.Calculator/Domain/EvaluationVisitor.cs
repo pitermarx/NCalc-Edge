@@ -6,15 +6,13 @@ namespace NCalc.Domain
 {
     public class EvaluationVisitor : LogicalExpressionVisitor
     {
-        private delegate T Func<T>();
+        private readonly EvaluateOptions options = EvaluateOptions.None;
 
-        private readonly EvaluateOptions _options = EvaluateOptions.None;
-
-        private bool IgnoreCase { get { return (_options & EvaluateOptions.IgnoreCase) == EvaluateOptions.IgnoreCase; } }
+        private bool IgnoreCase { get { return (options & EvaluateOptions.IgnoreCase) == EvaluateOptions.IgnoreCase; } }
 
         public EvaluationVisitor(EvaluateOptions options)
         {
-            _options = options;
+            this.options = options;
         }
 
         public object Result { get; private set; }
@@ -30,7 +28,7 @@ namespace NCalc.Domain
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private static Type[] CommonTypes = new[] { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
+        private static readonly Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
         /// <summary>
         /// Gets the the most precise type.
@@ -236,7 +234,7 @@ namespace NCalc.Domain
             // Evaluating every value could produce unexpected behaviour
             for (int i = 0; i < function.Expressions.Length; i++)
             {
-                args.Parameters[i] = new Expression(function.Expressions[i], _options);
+                args.Parameters[i] = new Expression(function.Expressions[i], options);
                 args.Parameters[i].EvaluateFunction += EvaluateFunction;
                 args.Parameters[i].EvaluateParameter += EvaluateParameter;
 
@@ -447,7 +445,7 @@ namespace NCalc.Domain
                     if (function.Expressions.Length != 2)
                         throw new ArgumentException("Round() takes exactly 2 arguments");
 
-                    MidpointRounding rounding = (_options & EvaluateOptions.RoundAwayFromZero) == EvaluateOptions.RoundAwayFromZero ? MidpointRounding.AwayFromZero : MidpointRounding.ToEven;
+                    MidpointRounding rounding = (options & EvaluateOptions.RoundAwayFromZero) == EvaluateOptions.RoundAwayFromZero ? MidpointRounding.AwayFromZero : MidpointRounding.ToEven;
 
                     Result = Math.Round(Convert.ToDouble(Evaluate(function.Expressions[0])), Convert.ToInt16(Evaluate(function.Expressions[1])), rounding);
 
