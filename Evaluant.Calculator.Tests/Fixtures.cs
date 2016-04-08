@@ -1,62 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 using NCalc.Domain;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Collections;
+using NUnit.Framework;
 using ThreadState = System.Threading.ThreadState;
 
 namespace NCalc.Tests
 {
-    [TestClass]
-    public class PerformanceTests
-    {
-        public static void AssertTime(Action action, TimeSpan expected, int times = 100)
-        {
-            // warmup
-            action();
-
-            var stopwatch = Stopwatch.StartNew();
-            for (var i = 0; i < times; i += 1) action();
-            stopwatch.Stop();
-            Console.Write(stopwatch.Elapsed);
-            Assert.IsTrue(stopwatch.Elapsed <= expected);
-        }
-
-        [TestMethod]
-        public void ExpressionMixNoCachePerformanceTest()
-        {
-            var expressions = new[]
-            {
-                "Abs(-1) + Cos(2)",
-                "2 + 3 + 5",
-                "2 * 3 + 5",
-                "2 * (3 + 5)",
-                "2 * (2*(2*(2+1)))",
-                "10 % 3",
-                "true or false",
-                "not true",
-                "false || not (false and true)",
-                "3 > 2 and 1 <= (3-2)",
-                "3 % 2 != 10 % 3"
-            };
-
-            AssertTime(() => expressions.ToList().ForEach(e => new Expression(e, EvaluateOptions.NoCache).Evaluate()), TimeSpan.FromMilliseconds(500));
-        }
-    }
-
-    [TestClass]
+    [TestFixture]
     public class Fixtures
     {
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Test]
         public void ExpressionShouldEvaluate()
         {
             var expressions = new []
@@ -79,7 +34,7 @@ namespace NCalc.Tests
                     new Expression(expression).Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldParseValues()
         {
             Assert.AreEqual(123456, new Expression("123456").Evaluate());
@@ -90,7 +45,7 @@ namespace NCalc.Tests
             Assert.AreEqual("azerty", new Expression("'azerty'").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleUnicode()
         {
             Assert.AreEqual("経済協力開発機構", new Expression("'経済協力開発機構'").Evaluate());
@@ -99,7 +54,7 @@ namespace NCalc.Tests
             Assert.AreEqual("\u0100", new Expression(@"'\u0100'").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldEscapeCharacters()
         {
             Assert.AreEqual("'hello'", new Expression(@"'\'hello\''").Evaluate());
@@ -107,7 +62,7 @@ namespace NCalc.Tests
             Assert.AreEqual("hel\nlo", new Expression(@"'hel\nlo'").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldDisplayErrorMessages()
         {
             try
@@ -121,7 +76,7 @@ namespace NCalc.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Maths()
         {
             Assert.AreEqual(1M, new Expression("Abs(-1)").Evaluate());
@@ -144,7 +99,7 @@ namespace NCalc.Tests
             Assert.AreEqual(1d, new Expression("Truncate(1.7)").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ExpressionShouldEvaluateCustomFunctions()
         {
             var e = new Expression("SecretOperation(3, 6)");
@@ -158,7 +113,7 @@ namespace NCalc.Tests
             Assert.AreEqual(9, e.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ExpressionShouldEvaluateCustomFunctionsWithParameters()
         {
             var e = new Expression("SecretOperation([e], 6) + f");
@@ -174,11 +129,11 @@ namespace NCalc.Tests
             Assert.AreEqual(10, e.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
 		public void ExpressionShouldEvaluateParameters()
 		{
 			var e = new Expression("Round(Pow(Pi, 2) + Pow([Pi Squared], 2) + [X], 2)");
-		    
+
 			e.Parameters["Pi Squared"] = new Expression("Pi * [Pi]");
 			e.Parameters["X"] = 10;
 
@@ -191,7 +146,7 @@ namespace NCalc.Tests
 			Assert.AreEqual(117.07, e.Evaluate());
 		}
 
-        [TestMethod]
+        [Test]
         public void ShouldEvaluateConditionnal()
         {
             var eif = new Expression("if([divider] <> 0, [divided] / [divider], 0)");
@@ -206,7 +161,7 @@ namespace NCalc.Tests
             Assert.AreEqual(0, eif.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldOverrideExistingFunctions()
         {
             var e = new Expression("Round(1.99, 2)");
@@ -222,7 +177,7 @@ namespace NCalc.Tests
             Assert.AreEqual(3, e.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldEvaluateInOperator()
         {
             // The last argument should not be evaluated
@@ -245,7 +200,7 @@ namespace NCalc.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldEvaluateOperators()
         {
             var expressions = new Dictionary<string, object>
@@ -285,10 +240,10 @@ namespace NCalc.Tests
             {
                 Assert.AreEqual(pair.Value, new Expression(pair.Key).Evaluate(), pair.Key + " failed");
             }
-            
+
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleOperatorsPriority()
         {
             Assert.AreEqual(8, new Expression("2+2+2+2").Evaluate());
@@ -300,13 +255,13 @@ namespace NCalc.Tests
             Assert.AreEqual(13.5, new Expression("18/2/2*3").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldNotLoosePrecision()
         {
             Assert.AreEqual(0.5, new Expression("3/6").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldThrowAnExpcetionWhenInvalidNumber()
         {
             try
@@ -320,19 +275,19 @@ namespace NCalc.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldNotRoundDecimalValues()
         {
             Assert.AreEqual(false, new Expression("0 <= -0.6").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldEvaluateTernaryExpression()
         {
             Assert.AreEqual(1, new Expression("1+2<3 ? 3+4 : 1").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldSerializeExpression()
         {
             Assert.AreEqual("True and False", new BinaryExpression(BinaryExpressionType.And, new ValueExpression(true), new ValueExpression(false)).ToString());
@@ -364,7 +319,7 @@ namespace NCalc.Tests
             Assert.AreEqual("Sum(1 + 2)", new Function(new Identifier("Sum"), new [] { new BinaryExpression(BinaryExpressionType.Plus, new ValueExpression(1), new ValueExpression(2))}).ToString());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleStringConcatenation()
         {
             Assert.AreEqual("toto", new Expression("'to' + 'to'").Evaluate());
@@ -372,7 +327,7 @@ namespace NCalc.Tests
             Assert.AreEqual(3M, new Expression("1 + '2'").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldDetectSyntaxErrorsBeforeEvaluation()
         {
             var e = new Expression("a + b * (");
@@ -387,7 +342,7 @@ namespace NCalc.Tests
             Assert.IsNotNull(e.Error);
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldReuseCompiledExpressionsInMultiThreadedMode()
         {
             // Repeats the tests n times
@@ -448,7 +403,7 @@ namespace NCalc.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleCaseSensitiveness()
         {
             Assert.AreEqual(1M, new Expression("aBs(-1)", EvaluateOptions.IgnoreCase).Evaluate());
@@ -470,7 +425,7 @@ namespace NCalc.Tests
             Assert.Fail("Should throw ArgumentException");
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleCustomParametersWhenNoSpecificParameterIsDefined()
         {
             var e = new Expression("Round(Pow([Pi], 2) + Pow([Pi], 2) + 10, 2)");
@@ -484,7 +439,7 @@ namespace NCalc.Tests
             e.Evaluate();
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleCustomFunctionsInFunctions()
         {
             var e = new Expression("if(true, func1(x) + func2(func3(y)), 0)");
@@ -519,7 +474,7 @@ namespace NCalc.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void ShouldParseScientificNotation()
         {
             Assert.AreEqual(12.2d, new Expression("1.22e1").Evaluate());
@@ -530,7 +485,7 @@ namespace NCalc.Tests
             Assert.AreEqual(10000000000d, new Expression("1e10").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldEvaluateArrayParameters()
         {
             var e = new Expression("x * x", EvaluateOptions.IterateParameters);
@@ -545,7 +500,7 @@ namespace NCalc.Tests
             Assert.AreEqual(16, result[4]);
         }
 
-        [TestMethod]
+        [Test]
         public void CustomFunctionShouldReturnNull()
         {
             var e = new Expression("SecretOperation(3, 6)");
@@ -561,7 +516,7 @@ namespace NCalc.Tests
             Assert.AreEqual(null, e.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void CustomParametersShouldReturnNull()
         {
             var e = new Expression("x");
@@ -577,21 +532,21 @@ namespace NCalc.Tests
             Assert.AreEqual(null, e.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldCompareDates()
         {
             Assert.AreEqual(true, new Expression("#1/1/2009#==#1/1/2009#").Evaluate());
             Assert.AreEqual(false, new Expression("#2/1/2009#==#1/1/2009#").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldRoundAwayFromZero()
         {
             Assert.AreEqual(22d, new Expression("Round(22.5, 0)").Evaluate());
             Assert.AreEqual(23d, new Expression("Round(22.5, 0)", EvaluateOptions.RoundAwayFromZero).Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldEvaluateSubExpressions()
         {
             var volume = new Expression("[surface] * h");
@@ -604,29 +559,29 @@ namespace NCalc.Tests
             Assert.AreEqual(6, volume.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldHandleLongValues()
         {
             Assert.AreEqual(40000000000 + 1f, new Expression("40000000000+1").Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldCompareLongValues()
         {
             Assert.AreEqual(false, new Expression("(0=1500000)||(((0+2200000000)-1500000)<0)").Evaluate());
         }
 
-        [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void ShouldDisplayErrorIfUncompatibleTypes()
         {
             var e = new Expression("(a > b) + 10");
             e.Parameters["a"] = 1;
             e.Parameters["b"] = 2;
-            e.Evaluate();
+            Assert.Throws<InvalidOperationException>(() => e.Evaluate());
         }
 
-        [TestMethod]
-        public void ShouldNotConvertRealTypes() 
+        [Test]
+        public void ShouldNotConvertRealTypes()
         {
             var e = new Expression("x/2");
             e.Parameters["x"] = 2F;
@@ -647,7 +602,7 @@ namespace NCalc.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldShortCircuitBooleanExpressions()
         {
             var e = new Expression("([a] != 0) && ([b]/[a]>2)");
@@ -656,7 +611,7 @@ namespace NCalc.Tests
             Assert.AreEqual(false, e.Evaluate());
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldAddDoubleAndDecimal()
         {
             var e = new Expression("1.8 + Abs([var1])");

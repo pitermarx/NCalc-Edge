@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace NCalc.Domain
 {
-
-
     public class EvaluationVisitor : LogicalExpressionVisitor
     {
         private delegate T Func<T>();
@@ -34,7 +32,7 @@ namespace NCalc.Domain
 
         private static Type[] CommonTypes = new[] { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
-    /// <summary>
+        /// <summary>
         /// Gets the the most precise type.
         /// </summary>
         /// <param name="a">Type a.</param>
@@ -182,21 +180,17 @@ namespace NCalc.Domain
                     Result = Convert.ToUInt16(left()) & Convert.ToUInt16(right());
                     break;
 
-
                 case BinaryExpressionType.BitwiseOr:
                     Result = Convert.ToUInt16(left()) | Convert.ToUInt16(right());
                     break;
-
 
                 case BinaryExpressionType.BitwiseXOr:
                     Result = Convert.ToUInt16(left()) ^ Convert.ToUInt16(right());
                     break;
 
-
                 case BinaryExpressionType.LeftShift:
                     Result = Convert.ToUInt16(left()) << Convert.ToUInt16(right());
                     break;
-
 
                 case BinaryExpressionType.RightShift:
                     Result = Convert.ToUInt16(left()) >> Convert.ToUInt16(right());
@@ -240,15 +234,15 @@ namespace NCalc.Domain
             // Don't call parameters right now, instead let the function do it as needed.
             // Some parameters shouldn't be called, for instance, in a if(), the "not" value might be a division by zero
             // Evaluating every value could produce unexpected behaviour
-            for (int i = 0; i < function.Expressions.Length; i++ )
+            for (int i = 0; i < function.Expressions.Length; i++)
             {
-                args.Parameters[i] =  new Expression(function.Expressions[i], _options);
+                args.Parameters[i] = new Expression(function.Expressions[i], _options);
                 args.Parameters[i].EvaluateFunction += EvaluateFunction;
                 args.Parameters[i].EvaluateParameter += EvaluateParameter;
 
                 // Assign the parameters of the Expression to the arguments so that custom Functions and Parameters can use them
                 args.Parameters[i].Parameters = Parameters;
-            }            
+            }
 
             // Calls external implementation
             OnEvaluateFunction(IgnoreCase ? function.Identifier.Name.ToLower() : function.Identifier.Name, args);
@@ -263,6 +257,7 @@ namespace NCalc.Domain
             switch (function.Identifier.Name.ToLower())
             {
                 #region Abs
+
                 case "abs":
 
                     CheckCase("Abs", function.Identifier.Name);
@@ -276,9 +271,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Abs
 
                 #region Acos
+
                 case "acos":
 
                     CheckCase("Acos", function.Identifier.Name);
@@ -290,9 +286,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Acos
 
                 #region Asin
+
                 case "asin":
 
                     CheckCase("Asin", function.Identifier.Name);
@@ -304,9 +301,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Asin
 
                 #region Atan
+
                 case "atan":
 
                     CheckCase("Atan", function.Identifier.Name);
@@ -318,9 +316,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Atan
 
                 #region Ceiling
+
                 case "ceiling":
 
                     CheckCase("Ceiling", function.Identifier.Name);
@@ -332,7 +331,7 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Ceiling
 
                 #region Cos
 
@@ -347,9 +346,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Cos
 
                 #region Exp
+
                 case "exp":
 
                     CheckCase("Exp", function.Identifier.Name);
@@ -361,9 +361,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Exp
 
                 #region Floor
+
                 case "floor":
 
                     CheckCase("Floor", function.Identifier.Name);
@@ -375,9 +376,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Floor
 
                 #region IEEERemainder
+
                 case "ieeeremainder":
 
                     CheckCase("IEEERemainder", function.Identifier.Name);
@@ -389,9 +391,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion IEEERemainder
 
                 #region Log
+
                 case "log":
 
                     CheckCase("Log", function.Identifier.Name);
@@ -403,9 +406,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Log
 
                 #region Log10
+
                 case "log10":
 
                     CheckCase("Log10", function.Identifier.Name);
@@ -417,9 +421,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Log10
 
                 #region Pow
+
                 case "pow":
 
                     CheckCase("Pow", function.Identifier.Name);
@@ -431,9 +436,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Pow
 
                 #region Round
+
                 case "round":
 
                     CheckCase("Round", function.Identifier.Name);
@@ -447,9 +453,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Round
 
                 #region Sign
+
                 case "sign":
 
                     CheckCase("Sign", function.Identifier.Name);
@@ -461,9 +468,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Sign
 
                 #region Sin
+
                 case "sin":
 
                     CheckCase("Sin", function.Identifier.Name);
@@ -475,9 +483,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Sin
 
                 #region Sqrt
+
                 case "sqrt":
 
                     CheckCase("Sqrt", function.Identifier.Name);
@@ -489,9 +498,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Sqrt
 
                 #region Tan
+
                 case "tan":
 
                     CheckCase("Tan", function.Identifier.Name);
@@ -503,9 +513,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
+                #endregion Tan
 
                 #region Truncate
+
                 case "truncate":
 
                     CheckCase("Truncate", function.Identifier.Name);
@@ -517,9 +528,10 @@ namespace NCalc.Domain
 
                     break;
 
-                #endregion
-                
+                #endregion Truncate
+
                 #region Max
+
                 case "max":
 
                     CheckCase("Max", function.Identifier.Name);
@@ -533,9 +545,10 @@ namespace NCalc.Domain
                     Result = Numbers.Max(maxleft, maxright);
                     break;
 
-                #endregion
+                #endregion Max
 
                 #region Min
+
                 case "min":
 
                     CheckCase("Min", function.Identifier.Name);
@@ -549,9 +562,10 @@ namespace NCalc.Domain
                     Result = Numbers.Min(minleft, minright);
                     break;
 
-                #endregion
+                #endregion Min
 
                 #region if
+
                 case "if":
 
                     CheckCase("if", function.Identifier.Name);
@@ -564,9 +578,10 @@ namespace NCalc.Domain
                     Result = cond ? Evaluate(function.Expressions[1]) : Evaluate(function.Expressions[2]);
                     break;
 
-                #endregion
+                #endregion if
 
                 #region in
+
                 case "in":
 
                     CheckCase("in", function.Identifier.Name);
@@ -592,10 +607,10 @@ namespace NCalc.Domain
                     Result = evaluation;
                     break;
 
-                #endregion
+                #endregion in
 
                 default:
-                    throw new ArgumentException("Function not found", 
+                    throw new ArgumentException("Function not found",
                         function.Identifier.Name);
             }
         }
@@ -636,7 +651,7 @@ namespace NCalc.Domain
                     // The parameter is itself another Expression
                     var expression = (Expression)Parameters[parameter.Name];
 
-                    // Overloads parameters 
+                    // Overloads parameters
                     foreach (var p in Parameters)
                     {
                         expression.Parameters[p.Key] = p.Value;
@@ -674,6 +689,5 @@ namespace NCalc.Domain
         }
 
         public Dictionary<string, object> Parameters { get; set; }
-
     }
 }
