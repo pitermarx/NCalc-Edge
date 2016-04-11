@@ -6,11 +6,9 @@ namespace NCalc.Domain
 {
     public class EvaluationVisitor : LogicalExpressionVisitor
     {
-        private readonly EvaluateOptions options = EvaluateOptions.None;
+        private readonly EvaluateOptions options;
 
-        private bool IgnoreCase { get { return (options & EvaluateOptions.IgnoreCase) == EvaluateOptions.IgnoreCase; } }
-
-        public EvaluationVisitor(EvaluateOptions options)
+        public EvaluationVisitor(EvaluateOptions options = EvaluateOptions.None)
         {
             this.options = options;
         }
@@ -243,7 +241,7 @@ namespace NCalc.Domain
             }
 
             // Calls external implementation
-            OnEvaluateFunction(IgnoreCase ? function.Identifier.Name.ToLower() : function.Identifier.Name, args);
+            OnEvaluateFunction(options.IgnoreCase() ? function.Identifier.Name.ToLower() : function.Identifier.Name, args);
 
             // If an external implementation was found get the result back
             if (args.HasResult)
@@ -445,7 +443,7 @@ namespace NCalc.Domain
                     if (function.Expressions.Length != 2)
                         throw new ArgumentException("Round() takes exactly 2 arguments");
 
-                    MidpointRounding rounding = (options & EvaluateOptions.RoundAwayFromZero) == EvaluateOptions.RoundAwayFromZero ? MidpointRounding.AwayFromZero : MidpointRounding.ToEven;
+                    MidpointRounding rounding = options.RoundAwayFromZero() ? MidpointRounding.AwayFromZero : MidpointRounding.ToEven;
 
                     Result = Math.Round(Convert.ToDouble(Evaluate(function.Expressions[0])), Convert.ToInt16(Evaluate(function.Expressions[1])), rounding);
 
@@ -615,7 +613,7 @@ namespace NCalc.Domain
 
         private void CheckCase(string function, string called)
         {
-            if (IgnoreCase)
+            if (options.IgnoreCase())
             {
                 if (function.ToLower() == called.ToLower())
                 {

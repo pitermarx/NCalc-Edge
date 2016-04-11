@@ -31,4 +31,32 @@ namespace NCalc
         //     When using Round(), if a number is halfway between two others, it is rounded toward the nearest number that is away from zero.
         RoundAwayFromZero = 16
     }
+
+    internal static class EvaluateOptionsExtensions
+    {
+        private static bool Has(this EvaluateOptions opts, EvaluateOptions flag)
+        {
+            return (opts & flag) == flag;
+        }
+
+        public static bool IgnoreCase(this EvaluateOptions opts)
+        {
+            return opts.Has(EvaluateOptions.IgnoreCase);
+        }
+
+        public static bool NoCache(this EvaluateOptions opts)
+        {
+            return opts.Has(EvaluateOptions.NoCache);
+        }
+
+        public static bool IterateParameters(this EvaluateOptions opts)
+        {
+            return opts.Has(EvaluateOptions.IterateParameters);
+        }
+
+        public static bool RoundAwayFromZero(this EvaluateOptions opts)
+        {
+            return opts.Has(EvaluateOptions.RoundAwayFromZero);
+        }
+    }
 }

@@ -157,7 +157,7 @@ namespace NCalc
             {
                 if (ParsedExpression == null)
                 {
-                    ParsedExpression = Compile(OriginalExpression, (Options & EvaluateOptions.NoCache) == EvaluateOptions.NoCache);
+                    ParsedExpression = Compile(OriginalExpression, Options.NoCache());
                 }
 
                 // In case HasErrors() is called multiple times for the same expression
@@ -186,7 +186,7 @@ namespace NCalc
 
             if (ParsedExpression == null)
             {
-                ParsedExpression = Compile(OriginalExpression, (Options & EvaluateOptions.NoCache) == EvaluateOptions.NoCache);
+                ParsedExpression = Compile(OriginalExpression, Options.NoCache());
             }
 
             var visitor = new EvaluationVisitor(Options);
@@ -195,7 +195,7 @@ namespace NCalc
             visitor.Parameters = Parameters;
 
             // if array evaluation, execute the same expression multiple times
-            if ((Options & EvaluateOptions.IterateParameters) == EvaluateOptions.IterateParameters)
+            if (Options.IterateParameters())
             {
                 int size = -1;
                 ParametersBackup = new Dictionary<string, object>();
