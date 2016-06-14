@@ -13,6 +13,8 @@ namespace NCalc
     {
         public EvaluateOptions Options { get; set; }
 
+        private bool IgnoreCase => (Options & EvaluateOptions.IgnoreCase) == EvaluateOptions.IgnoreCase;
+
         /// <summary>
         /// Textual representation of the expression to evaluate.
         /// </summary>
@@ -262,7 +264,7 @@ namespace NCalc
 
         public Dictionary<string, object> Parameters
         {
-            get { return parameters ?? (parameters = new Dictionary<string, object>()); }
+            get { return parameters ?? (parameters = new Dictionary<string, object>(IgnoreCase ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture)); }
             set { parameters = value; }
         }
     }
