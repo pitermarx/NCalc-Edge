@@ -13,7 +13,7 @@ namespace NCalc
     {
         public EvaluateOptions Options { get; set; }
 
-        private bool IgnoreCase => (Options & EvaluateOptions.IgnoreCase) == EvaluateOptions.IgnoreCase;
+        private bool IgnoreCase { get { return (Options & EvaluateOptions.IgnoreCase) == EvaluateOptions.IgnoreCase; } }
 
         /// <summary>
         /// Textual representation of the expression to evaluate.
