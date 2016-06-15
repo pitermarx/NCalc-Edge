@@ -424,6 +424,35 @@ namespace NCalc.Tests
         }
 
         [Test]
+        public void ShouldHandleParameterCaseSensitiveness()
+        {
+            var e = new Expression("x*2", EvaluateOptions.IgnoreCase);
+            e.Parameters["X"] = 2;
+            Assert.AreEqual(4, e.Evaluate());
+
+            e = new Expression("x*2");
+            e.Parameters["x"] = 2;
+            Assert.AreEqual(4, e.Evaluate());
+
+            try
+            {
+                e = new Expression("x*2");
+                e.Parameters["X"] = 2;
+                Assert.AreEqual(4, e.Evaluate());
+            }
+            catch (ArgumentException)
+            {
+                return;
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Unexpected exception");
+            }
+
+            Assert.Fail("Should throw ArgumentException");
+        }
+
+        [Test]
         public void ShouldHandleCustomParametersWhenNoSpecificParameterIsDefined()
         {
             var e = new Expression("Round(Pow([Pi], 2) + Pow([Pi], 2) + 10, 2)");
