@@ -1,0 +1,9 @@
+assembly-versioning-scheme: MajorMinorPatch
+assembly-informational-format: '{MajorMinorPatch}.{CommitsSinceVersionSource}-{BranchName}'
+mode: ContinuousDeployment
+continuous-delivery-fallback-tag: build
+next-version: 1.4.4
+branches:
+  master: {}
+ignore:
+  sha: []
