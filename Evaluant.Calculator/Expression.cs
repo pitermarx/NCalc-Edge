@@ -43,7 +43,7 @@ namespace NCalc
         #region Cache management
 
         private static bool cacheEnabled = true;
-        private static Dictionary<string, WeakReference> compiledExpressions = new Dictionary<string, WeakReference>();
+        private static Dictionary<string, LogicalExpression> compiledExpressions = new Dictionary<string, LogicalExpression>();
         private static readonly ReaderWriterLock Rwl = new ReaderWriterLock();
 
         public static bool CacheEnabled
@@ -56,7 +56,7 @@ namespace NCalc
                 if (!CacheEnabled)
                 {
                     // Clears cache
-                    compiledExpressions = new Dictionary<string, WeakReference>();
+                    compiledExpressions = new Dictionary<string, LogicalExpression>();
                 }
             }
         }
@@ -64,26 +64,6 @@ namespace NCalc
         /// <summary>
         /// Removed unused entries from cached compiled expression
         /// </summary>
-        private static void CleanCache()
-        {
-            var keysToRemove = new List<string>();
-
-            try
-            {
-                Rwl.AcquireWriterLock(Timeout.Infinite);
-                keysToRemove.AddRange(compiledExpressions.Where(de => !de.Value.IsAlive).Select(de => de.Key));
-
-                foreach (string key in keysToRemove)
-                {
-                    compiledExpressions.Remove(key);
-                    Trace.TraceInformation("Cache entry released: " + key);
-                }
-            }
-            finally
-            {
-                Rwl.ReleaseReaderLock();
-            }
-        }
 
         #endregion Cache management
 
@@ -100,10 +80,9 @@ namespace NCalc
                     if (compiledExpressions.ContainsKey(expression))
                     {
                         Trace.TraceInformation("Expression retrieved from cache: " + expression);
-                        var wr = compiledExpressions[expression];
-                        logicalExpression = wr.Target as LogicalExpression;
+                        logicalExpression = compiledExpressions[expression];
 
-                        if (wr.IsAlive && logicalExpression != null)
+                        if (logicalExpression != null)
                         {
                             return logicalExpression;
                         }
@@ -132,15 +111,12 @@ namespace NCalc
                     try
                     {
                         Rwl.AcquireWriterLock(Timeout.Infinite);
-                        compiledExpressions[expression] = new WeakReference(logicalExpression);
+                        compiledExpressions[expression] = logicalExpression;
                     }
                     finally
                     {
                         Rwl.ReleaseWriterLock();
                     }
-
-                    CleanCache();
-
                     Trace.TraceInformation("Expression added to cache: " + expression);
                 }
             }
