@@ -148,6 +148,8 @@ AppPackages/
 
 # Others
 sql/
+tools/
+!tools/packages.config
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
