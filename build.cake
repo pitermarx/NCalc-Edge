@@ -74,7 +74,7 @@ Task("Pack")
         Files        = new [] { 
             new NuSpecContent {
                 Source = "Evaluant.Calculator/bin/Release/NCalc.dll",
-                Target = "lib"
+                Target = "lib/net35"
             },
         },
         BasePath        = "./",
