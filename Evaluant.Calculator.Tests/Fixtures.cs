@@ -147,6 +147,36 @@ namespace NCalc.Tests
         }
 
         [Test]
+        public void ExpressionShouldHandleNullRightParameters()
+        {
+            var e = new Expression("'a string' == null");
+            
+            e.Parameters["null"] = null;
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldHandleNullLeftParameters()
+        {
+            var e = new Expression("null == 'a string'");
+
+            e.Parameters["null"] = null;
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldHandleNullBothParameters()
+        {
+            var e = new Expression("null == null");
+
+            e.Parameters["null"] = null;
+
+            Assert.AreEqual(true, e.Evaluate());
+        }
+
+        [Test]
         public void ShouldEvaluateConditionnal()
         {
             var eif = new Expression("if([divider] <> 0, [divided] / [divider], 0)");

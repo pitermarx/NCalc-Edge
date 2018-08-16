@@ -29,27 +29,27 @@ namespace NCalc.Domain
         private static readonly Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
         /// <summary>
-        /// Gets the the most precise type.
+        /// Gets the the most precise type of both objects.
         /// </summary>
-        /// <param name="a">Type a.</param>
-        /// <param name="b">Type b.</param>
+        /// <param name="a">Object a.</param>
+        /// <param name="b">Object b.</param>
         /// <returns></returns>
-        private static Type GetMostPreciseType(Type a, Type b)
+        private static Type GetMostPreciseType(object a, object b)
         {
             foreach (Type t in CommonTypes)
             {
-                if (a == t || b == t)
+                if ((a != null && a.GetType() == t) || (b != null && b.GetType() == t))
                 {
                     return t;
                 }
             }
 
-            return a;
+            return a != null ? a.GetType() : b != null ? b.GetType() : typeof(Object);
         }
 
         public int CompareUsingMostPreciseType(object a, object b)
         {
-            Type mpt = GetMostPreciseType(a.GetType(), b.GetType());
+            Type mpt = GetMostPreciseType(a, b);
             return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
         }
 
