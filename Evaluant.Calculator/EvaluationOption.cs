@@ -29,7 +29,12 @@ namespace NCalc
         //
         // Summary:
         //     When using Round(), if a number is halfway between two others, it is rounded toward the nearest number that is away from zero.
-        RoundAwayFromZero = 16
+        RoundAwayFromZero = 16,
+
+        //
+        // Summary:
+        //     Defines a "null" parameter and allows comparison of values to null.
+        AllowNullParameter = 32
     }
 
     internal static class EvaluateOptionsExtensions
@@ -57,6 +62,11 @@ namespace NCalc
         public static bool RoundAwayFromZero(this EvaluateOptions opts)
         {
             return opts.Has(EvaluateOptions.RoundAwayFromZero);
+        }
+
+        public static bool AllowNullParameter(this EvaluateOptions opts)
+        {
+            return opts.Has(EvaluateOptions.AllowNullParameter);
         }
     }
 }

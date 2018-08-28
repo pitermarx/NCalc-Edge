@@ -149,9 +149,7 @@ namespace NCalc.Tests
         [Test]
         public void ExpressionShouldHandleNullRightParameters()
         {
-            var e = new Expression("'a string' == null");
-            
-            e.Parameters["null"] = null;
+            var e = new Expression("'a string' == null", EvaluateOptions.AllowNullParameter);
 
             Assert.AreEqual(false, e.Evaluate());
         }
@@ -159,9 +157,7 @@ namespace NCalc.Tests
         [Test]
         public void ExpressionShouldHandleNullLeftParameters()
         {
-            var e = new Expression("null == 'a string'");
-
-            e.Parameters["null"] = null;
+            var e = new Expression("null == 'a string'", EvaluateOptions.AllowNullParameter);
 
             Assert.AreEqual(false, e.Evaluate());
         }
@@ -169,11 +165,28 @@ namespace NCalc.Tests
         [Test]
         public void ExpressionShouldHandleNullBothParameters()
         {
-            var e = new Expression("null == null");
+            var e = new Expression("null == null", EvaluateOptions.AllowNullParameter);
+
+            Assert.AreEqual(true, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionDoesNotDefineNullParameterWithoutNullOption()
+        {
+            var e = new Expression("'a string' == null");
+
+            var ex = Assert.Throws<ArgumentException>(() => e.Evaluate());
+            Assert.IsTrue(ex.Message.Contains("Parameter name: null"));
+        }
+
+        [Test]
+        public void ExpressionThrowsNullReferenceExceptionWithoutNullOption()
+        {
+            var e = new Expression("'a string' == null");
 
             e.Parameters["null"] = null;
 
-            Assert.AreEqual(true, e.Evaluate());
+            Assert.Throws<NullReferenceException>(() => e.Evaluate());
         }
 
         [Test]

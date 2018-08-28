@@ -29,7 +29,7 @@ namespace NCalc.Domain
         private static readonly Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
         /// <summary>
-        /// Gets the the most precise type of both objects.
+        /// Gets the the most precise type of both objects, even if one is null.
         /// </summary>
         /// <param name="a">Object a.</param>
         /// <param name="b">Object b.</param>
@@ -47,9 +47,38 @@ namespace NCalc.Domain
             return a != null ? a.GetType() : b != null ? b.GetType() : typeof(Object);
         }
 
+        /// <summary>
+        /// Gets the the most precise type of two types.
+        /// </summary>
+        /// <param name="a">Type a.</param>
+        /// <param name="b">Type b.</param>
+        /// <returns></returns>
+        private static Type GetMostPreciseType(Type a, Type b)
+        {
+            foreach (Type t in CommonTypes)
+            {
+                if (a == t || b == t)
+                {
+                    return t;
+                }
+            }
+
+            return a;
+        }
+
         public int CompareUsingMostPreciseType(object a, object b)
         {
-            Type mpt = GetMostPreciseType(a, b);
+            Type mpt;
+
+            // Allow nulls to be compared with other values
+            if (options.AllowNullParameter())
+            {
+                mpt = GetMostPreciseType(a, b);
+                return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
+            }
+
+            // No breaking changes fallback
+            mpt = GetMostPreciseType(a.GetType(), b.GetType());
             return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
         }
 
