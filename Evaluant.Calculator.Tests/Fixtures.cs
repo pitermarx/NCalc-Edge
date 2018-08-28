@@ -171,6 +171,38 @@ namespace NCalc.Tests
         }
 
         [Test]
+        public void ShouldCompareNullToNull()
+        {
+            var e = new Expression("[x] = null", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = null;
+
+            Assert.AreEqual(true, e.Evaluate());
+        }
+
+        [Test]
+        public void ShouldCompareNullableToNonNullable()
+        {
+            var e = new Expression("[x] = 5", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = (int?)5;
+            Assert.AreEqual(true, e.Evaluate());
+
+            e.Parameters["x"] = (int?)6;
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ShouldCompareNullToString()
+        {
+            var e = new Expression("[x] = 'foo'", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = null;
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
         public void ExpressionDoesNotDefineNullParameterWithoutNullOption()
         {
             var e = new Expression("'a string' == null");
