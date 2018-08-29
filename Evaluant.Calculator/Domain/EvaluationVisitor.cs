@@ -63,22 +63,16 @@ namespace NCalc.Domain
                 }
             }
 
-            return a;
+            return a ?? b;
         }
 
         public int CompareUsingMostPreciseType(object a, object b)
         {
-            Type mpt;
-
-            // Allow nulls to be compared with other values
-            if (options.AllowNullParameter())
-            {
-                mpt = GetMostPreciseType(a, b);
-                return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
-            }
-
-            // No breaking changes fallback
-            mpt = GetMostPreciseType(a.GetType(), b.GetType());
+            Type mpt = options.AllowNullParameter()
+                // Allow nulls to be compared with other values
+                ? GetMostPreciseType(a?.GetType(), b?.GetType()) ?? typeof(object)
+                // No breaking changes fallback
+                : GetMostPreciseType(a.GetType(), b.GetType());
             return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
         }
 

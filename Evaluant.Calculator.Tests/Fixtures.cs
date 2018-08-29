@@ -335,7 +335,7 @@ namespace NCalc.Tests
         }
 
         [Test]
-        public void ShouldThrowAnExpcetionWhenInvalidNumber()
+        public void ShouldThrowAnExceptionWhenInvalidNumber()
         {
             try
             {
