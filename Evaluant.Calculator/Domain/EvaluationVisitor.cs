@@ -29,7 +29,7 @@ namespace NCalc.Domain
         private static readonly Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
         /// <summary>
-        /// Gets the the most precise type.
+        /// Gets the the most precise type of two types.
         /// </summary>
         /// <param name="a">Type a.</param>
         /// <param name="b">Type b.</param>
@@ -44,12 +44,16 @@ namespace NCalc.Domain
                 }
             }
 
-            return a;
+            return a ?? b;
         }
 
         public int CompareUsingMostPreciseType(object a, object b)
         {
-            Type mpt = GetMostPreciseType(a.GetType(), b.GetType());
+            Type mpt = options.AllowNullParameter()
+                // Allow nulls to be compared with other values
+                ? GetMostPreciseType(a?.GetType(), b?.GetType()) ?? typeof(object)
+                // No breaking changes fallback
+                : GetMostPreciseType(a.GetType(), b.GetType());
             return Comparer.Default.Compare(Convert.ChangeType(a, mpt), Convert.ChangeType(b, mpt));
         }
 

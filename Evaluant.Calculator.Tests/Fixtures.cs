@@ -147,6 +147,81 @@ namespace NCalc.Tests
         }
 
         [Test]
+        public void ExpressionShouldHandleNullRightParameters()
+        {
+            var e = new Expression("'a string' == null", EvaluateOptions.AllowNullParameter);
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldHandleNullLeftParameters()
+        {
+            var e = new Expression("null == 'a string'", EvaluateOptions.AllowNullParameter);
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldHandleNullBothParameters()
+        {
+            var e = new Expression("null == null", EvaluateOptions.AllowNullParameter);
+
+            Assert.AreEqual(true, e.Evaluate());
+        }
+
+        [Test]
+        public void ShouldCompareNullToNull()
+        {
+            var e = new Expression("[x] = null", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = null;
+
+            Assert.AreEqual(true, e.Evaluate());
+        }
+
+        [Test]
+        public void ShouldCompareNullableToNonNullable()
+        {
+            var e = new Expression("[x] = 5", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = (int?)5;
+            Assert.AreEqual(true, e.Evaluate());
+
+            e.Parameters["x"] = (int?)6;
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ShouldCompareNullToString()
+        {
+            var e = new Expression("[x] = 'foo'", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = null;
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionDoesNotDefineNullParameterWithoutNullOption()
+        {
+            var e = new Expression("'a string' == null");
+
+            var ex = Assert.Throws<ArgumentException>(() => e.Evaluate());
+            Assert.IsTrue(ex.Message.Contains("Parameter name: null"));
+        }
+
+        [Test]
+        public void ExpressionThrowsNullReferenceExceptionWithoutNullOption()
+        {
+            var e = new Expression("'a string' == null");
+
+            e.Parameters["null"] = null;
+
+            Assert.Throws<NullReferenceException>(() => e.Evaluate());
+        }
+
+        [Test]
         public void ShouldEvaluateConditionnal()
         {
             var eif = new Expression("if([divider] <> 0, [divided] / [divider], 0)");
@@ -260,7 +335,7 @@ namespace NCalc.Tests
         }
 
         [Test]
-        public void ShouldThrowAnExpcetionWhenInvalidNumber()
+        public void ShouldThrowAnExceptionWhenInvalidNumber()
         {
             try
             {
