@@ -29,25 +29,6 @@ namespace NCalc.Domain
         private static readonly Type[] CommonTypes = { typeof(Int64), typeof(Double), typeof(Boolean), typeof(String), typeof(Decimal) };
 
         /// <summary>
-        /// Gets the the most precise type of both objects, even if one is null.
-        /// </summary>
-        /// <param name="a">Object a.</param>
-        /// <param name="b">Object b.</param>
-        /// <returns></returns>
-        private static Type GetMostPreciseType(object a, object b)
-        {
-            foreach (Type t in CommonTypes)
-            {
-                if ((a != null && a.GetType() == t) || (b != null && b.GetType() == t))
-                {
-                    return t;
-                }
-            }
-
-            return a != null ? a.GetType() : b != null ? b.GetType() : typeof(Object);
-        }
-
-        /// <summary>
         /// Gets the the most precise type of two types.
         /// </summary>
         /// <param name="a">Type a.</param>
