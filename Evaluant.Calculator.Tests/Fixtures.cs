@@ -203,12 +203,22 @@ namespace NCalc.Tests
         }
 
         [Test]
+        public void ShouldCompareNullToInt()
+        {
+            var e = new Expression("[x] = 4", EvaluateOptions.AllowNullParameter);
+
+            e.Parameters["x"] = null;
+
+            Assert.AreEqual(false, e.Evaluate());
+        }
+
+        [Test]
         public void ExpressionDoesNotDefineNullParameterWithoutNullOption()
         {
             var e = new Expression("'a string' == null");
 
             var ex = Assert.Throws<ArgumentException>(() => e.Evaluate());
-            Assert.IsTrue(ex.Message.Contains("Parameter name: null"));
+            Assert.IsTrue(ex.Message.Contains("Parameter was not defined"));
         }
 
         [Test]
@@ -619,6 +629,74 @@ namespace NCalc.Tests
             };
 
             Assert.AreEqual(null, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldEvaluateSumCustomFunctionsWithParametersThatReturnsNull()
+        {
+            var e = new Expression("SecretOperation(3, 6) + f");
+            e.Parameters["f"] = 5;
+
+            e.EvaluateFunction += delegate (string name, FunctionArgs args)
+            {
+                Assert.IsFalse(args.HasResult);
+                if (name == "SecretOperation")
+                    args.Result = null;
+                Assert.IsTrue(args.HasResult);
+            };
+
+            Assert.AreEqual(null, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldEvaluateDivideCustomFunctionsWithParametersThatReturnsNull()
+        {
+            var e = new Expression("SecretOperation(3, 6) / f");
+            e.Parameters["f"] = 5;
+
+            e.EvaluateFunction += delegate (string name, FunctionArgs args)
+            {
+                Assert.IsFalse(args.HasResult);
+                if (name == "SecretOperation")
+                    args.Result = null;
+                Assert.IsTrue(args.HasResult);
+            };
+
+            Assert.AreEqual(null, e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldEvaluateCompareCustomFunctionsWithParametersThatReturnsNull()
+        {
+            var e = new Expression("SecretOperation(3, 6) = f");
+            e.Parameters["f"] = 5;
+
+            e.EvaluateFunction += delegate (string name, FunctionArgs args)
+            {
+                Assert.IsFalse(args.HasResult);
+                if (name == "SecretOperation")
+                    args.Result = null;
+                Assert.IsTrue(args.HasResult);
+            };
+
+            Assert.Throws<NullReferenceException>(() => e.Evaluate());
+        }
+
+        [Test]
+        public void ExpressionShouldEvaluateSumCustomFunctionsWithParametersThatReturnsNullWithAllowNullParameter()
+        {
+            var e = new Expression("SecretOperation(3, 6) = f", EvaluateOptions.AllowNullParameter);
+            e.Parameters["f"] = 5;
+
+            e.EvaluateFunction += delegate (string name, FunctionArgs args)
+            {
+                Assert.IsFalse(args.HasResult);
+                if (name == "SecretOperation")
+                    args.Result = null;
+                Assert.IsTrue(args.HasResult);
+            };
+
+            Assert.AreEqual(false, e.Evaluate());
         }
 
         [Test]

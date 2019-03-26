@@ -19,6 +19,11 @@ namespace NCalc
             a = ConvertIfString(a);
             b = ConvertIfString(b);
 
+            if (a == null || b == null)
+            {
+                return null;
+            }
+
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
@@ -249,6 +254,11 @@ namespace NCalc
             a = ConvertIfString(a);
             b = ConvertIfString(b);
 
+            if (a == null || b == null)
+            {
+                return null;
+            }
+
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
@@ -468,6 +478,11 @@ namespace NCalc
             a = ConvertIfString(a);
             b = ConvertIfString(b);
 
+            if (a == null || b == null)
+            {
+                return null;
+            }
+
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
@@ -668,6 +683,11 @@ namespace NCalc
         {
             a = ConvertIfString(a);
             b = ConvertIfString(b);
+
+            if (a == null || b == null)
+            {
+                return null;
+            }
 
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());

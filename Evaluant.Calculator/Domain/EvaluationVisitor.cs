@@ -49,6 +49,11 @@ namespace NCalc.Domain
 
         public int CompareUsingMostPreciseType(object a, object b)
         {
+            //If any of the paremeter that is null, not is a string the method ChangeType fails
+            if ((a == null || b == null) && (a != b) && options.AllowNullParameter())
+            {
+                return -1;
+            }
             Type mpt = options.AllowNullParameter()
                 // Allow nulls to be compared with other values
                 ? GetMostPreciseType(a?.GetType(), b?.GetType()) ?? typeof(object)
@@ -74,7 +79,7 @@ namespace NCalc.Domain
         }
 
         private static bool IsReal(object value)
-        {
+        {   
             var typeCode = Type.GetTypeCode(value.GetType());
 
             return typeCode == TypeCode.Decimal || typeCode == TypeCode.Double || typeCode == TypeCode.Single;
@@ -117,9 +122,16 @@ namespace NCalc.Domain
                     break;
 
                 case BinaryExpressionType.Div:
-                    Result = IsReal(left()) || IsReal(right())
-                                 ? Numbers.Divide(left(), right())
-                                 : Numbers.Divide(Convert.ToDouble(left()), right());
+                    if (left() == null || right() == null)
+                    {
+                        Result = null;
+                    }
+                    else
+                    {
+                        Result = IsReal(left()) || IsReal(right())
+                                     ? Numbers.Divide(left(), right())
+                                     : Numbers.Divide(Convert.ToDouble(left()), right());
+                    }
                     break;
 
                 case BinaryExpressionType.Equal:
