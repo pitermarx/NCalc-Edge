@@ -40,6 +40,8 @@ namespace NCalc.Domain
             {
                 if (a == t || b == t)
                 {
+                    if (b == typeof(String) || a == typeof(String)) return typeof(String);
+
                     return t;
                 }
             }

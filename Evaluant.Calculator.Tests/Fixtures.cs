@@ -714,5 +714,22 @@ namespace NCalc.Tests
 
             Assert.AreEqual(false, e.Evaluate());
         }
+
+        [Test]
+        public void ShouldCompareStringWithNumber()
+        {
+
+            Assert.AreEqual(false, new Expression("'' = 5", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(false, new Expression("0.5 = ''", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(false, new Expression("20 = ''", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(false, new Expression("'Not number' = 0.5", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(true, new Expression("'5' = '5'", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(true, new Expression("'0.5' = 0.5", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(false, new Expression("20 = '0.5'", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(false, new Expression("'30' = '0.5'", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(22.5, new Expression("if('' = '',0.50,0.25) + 22", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(22.25, new Expression("if('Yes' = '',0.50,0.25) + 22", EvaluateOptions.AllowNullParameter).Evaluate());
+
+        }
     }
 }
