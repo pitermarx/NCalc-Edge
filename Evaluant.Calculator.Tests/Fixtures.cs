@@ -718,18 +718,55 @@ namespace NCalc.Tests
         [Test]
         public void ShouldCompareStringWithNumber()
         {
-
-            Assert.AreEqual(false, new Expression("'' = 5", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(false, new Expression("0.5 = ''", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(false, new Expression("20 = ''", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(false, new Expression("'Not number' = 0.5", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(true, new Expression("'5' = '5'", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(true, new Expression("'0.5' = 0.5", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(false, new Expression("20 = '0.5'", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(false, new Expression("'30' = '0.5'", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(22.5, new Expression("if('' = '',0.50,0.25) + 22", EvaluateOptions.AllowNullParameter).Evaluate());
-            Assert.AreEqual(22.25, new Expression("if('Yes' = '',0.50,0.25) + 22", EvaluateOptions.AllowNullParameter).Evaluate());
+            Assert.AreEqual(false, new Expression("'' = 5").Evaluate());
+            Assert.AreEqual(false, new Expression("20 = ''").Evaluate());
+            Assert.AreEqual(false, new Expression("'' = 5").Evaluate());
+            Assert.AreEqual(false, new Expression("20 = ''").Evaluate());
+            Assert.AreEqual(false, new Expression("0.5 = ''").Evaluate());
+            Assert.AreEqual(false, new Expression("'Not number' = 0.5").Evaluate());
+            Assert.AreEqual(true, new Expression("'5' = '5'").Evaluate());
+            Assert.AreEqual(true, new Expression("'0.5' = 0.5").Evaluate());
+            Assert.AreEqual(false, new Expression("20 = '0.5'").Evaluate());
+            Assert.AreEqual(false, new Expression("'30' = '0.5'").Evaluate());
+            Assert.AreEqual(22.5, new Expression("if('' = '',0.50,0.25) + 22").Evaluate());
+            Assert.AreEqual(22.25, new Expression("if('Yes' = '',0.50,0.25) + 22").Evaluate());
 
         }
+
+
+        [Test]
+        public void ShouldEvaluateStringOperators()
+        {
+            var expressions = new Dictionary<string, object>
+                                  {
+                                      {"!'true'", false},
+                                      {"not 'false'", true},
+                                      {"'1' < '2'", true},
+                                      {"'1' > '2'", false},
+                                      {"'1' <= '2'", true},
+                                      {"'1' <= '1'", true},
+                                      {"'1' >= '2'", false},
+                                      {"'1' >= '1'", true},
+                                      {"'1' = '1'", true},
+                                      {"'1' == '1'", true},
+                                      {"'1' != '1'", false},
+                                      {"'1' <> '1'", false},
+                                      {"'1' & '1'", 1},
+                                      {"'1' | '1'", 1},
+                                      {"'1' ^ '1'", 0},
+                                      {"'true' && 'false'", false},
+                                      {"'true' and 'false'", false},
+                                      {"'true' || 'false'", true},
+                                      {"'true' or 'false'", true},
+                                      {"if('true', 0, 1)", 0},
+                                      {"if('false', 0, 1)", 1}
+                                  };
+
+            foreach (KeyValuePair<string, object> pair in expressions)
+            {
+                Assert.AreEqual(pair.Value, new Expression(pair.Key).Evaluate(), pair.Key + " failed");
+            }
+        }
+
     }
 }
