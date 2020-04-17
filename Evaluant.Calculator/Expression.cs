@@ -20,6 +20,8 @@ namespace NCalc
         /// </summary>
         protected string OriginalExpression;
 
+        private Func<EvaluateOptions, EvaluationVisitor> ExpressionVisitorFactory { get;  set; }
+
         public Expression(string expression, EvaluateOptions options = EvaluateOptions.None)
         {
             if (String.IsNullOrEmpty(expression))
@@ -28,6 +30,7 @@ namespace NCalc
 
             OriginalExpression = expression;
             Options = options;
+            ExpressionVisitorFactory = CreateEvaluationVisitor;
         }
 
         public Expression(LogicalExpression expression, EvaluateOptions options = EvaluateOptions.None)
@@ -38,6 +41,29 @@ namespace NCalc
 
             ParsedExpression = expression;
             Options = options;
+            ExpressionVisitorFactory = CreateEvaluationVisitor;
+        }
+
+        public Expression(string expression, Func<EvaluateOptions, EvaluationVisitor> expressionVisitorFactory, EvaluateOptions options = EvaluateOptions.None)
+        {
+            if (String.IsNullOrEmpty(expression))
+                throw new
+                    ArgumentException("Expression can't be empty", "expression");
+
+            OriginalExpression = expression;
+            Options = options;
+            ExpressionVisitorFactory = expressionVisitorFactory;
+        }
+
+        public Expression(LogicalExpression expression, Func<EvaluateOptions, EvaluationVisitor> expressionVisitorFactory, EvaluateOptions options = EvaluateOptions.None)
+        {
+            if (expression == null)
+                throw new
+                    ArgumentException("Expression can't be null", "expression");
+
+            ParsedExpression = expression;
+            Options = options;
+            ExpressionVisitorFactory = expressionVisitorFactory;
         }
 
         #region Cache management
@@ -191,7 +217,7 @@ namespace NCalc
                 ParsedExpression = Compile(OriginalExpression, Options.NoCache());
             }
 
-            var visitor = new EvaluationVisitor(Options);
+            var visitor = ExpressionVisitorFactory(Options);
             visitor.EvaluateFunction += EvaluateFunction;
             visitor.EvaluateParameter += EvaluateParameter;
             visitor.Parameters = Parameters;
@@ -273,6 +299,11 @@ namespace NCalc
         {
             get { return parameters ?? (parameters = new Dictionary<string, object>(IgnoreCase ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture)); }
             set { parameters = value; }
+        }
+
+        private EvaluationVisitor CreateEvaluationVisitor(EvaluateOptions options)
+        {
+            return new EvaluationVisitor(options);
         }
     }
 }
